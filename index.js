@@ -63,6 +63,7 @@ async function run() {
       res.send(result);
     })
 
+    
     // TO MAKE INSTRUCTOR
     app.patch('/users/instructor/:id', async(req,res) => {
       const id = req.params.id;
