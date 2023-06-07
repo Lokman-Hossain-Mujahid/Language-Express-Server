@@ -44,6 +44,7 @@ async function run() {
 
     const database = client.db("LanguageDb")
     const usersCollection = database.collection('user')
+    const classCollection = database.collection('classes')
 
     app.post('/jwt', (req, res) => {
       const user = req.body
@@ -86,6 +87,7 @@ async function run() {
       res.send(result);
     })
 
+    // DASHBOARD ROLES
     app.get('/currentuser/:email', async(req,res) => {
       const email = req.params.email
       // console.log(email);
@@ -121,7 +123,12 @@ async function run() {
       res.send(result);
     })
 
-
+    // ADD A CLASS API
+    app.post('/classes', async(req, res) => {
+      const classItem = req.body;
+      const result = await classCollection.insertOne(classItem)
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
