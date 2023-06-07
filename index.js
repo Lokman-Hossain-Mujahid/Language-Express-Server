@@ -52,6 +52,28 @@ async function run() {
       res.send({token})
     })
 
+    // ADMIN VERIFICATION
+    const verifyAdmin = async(req, res, next) => {
+      const email = req.decoded.email;
+      const query = {email: email}
+      const user = await usersCollection.findOne(query);
+      if(user?.role !== 'admin') {
+        return res.status(403).send({ error: true, message: 'forbidden message'});
+      }
+      next();
+    }
+
+    // INSTRUCTOR VERIFICATION
+    const verifyInstructor = async(req, res, next) => {
+      const email = req.decoded.email;
+      const query = {email: email}
+      const user = await usersCollection.findOne(query);
+      if(user?.role !== 'instructor') {
+        return res.status(403).send({ error: true, message: 'forbidden message'});
+      }
+      next();
+    }
+
     // Users API
 
     app.get('/users',async(req, res) => {
@@ -123,10 +145,19 @@ async function run() {
       res.send(result);
     })
 
+    // IMPORTANT REMINDER TO MYSELF: IF CODE NOT WORKING REMOVE THIS JWT AND VERIFY!
+
     // ADD A CLASS API
-    app.post('/classes', async(req, res) => {
+    app.post('/classes', verifyJWT, verifyInstructor, async(req, res) => {
       const classItem = req.body;
       const result = await classCollection.insertOne(classItem)
+      res.send(result);
+    })
+
+    // MY CLASSES API
+
+    app.get('/classes', async (req, res) => {
+      const result = await classCollection.find().toArray();
       res.send(result);
     })
 
