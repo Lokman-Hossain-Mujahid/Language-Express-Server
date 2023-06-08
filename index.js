@@ -74,7 +74,7 @@ async function run() {
       next();
     }
 
-    // Users API
+    // ALL USERS API
 
     app.get('/users',async(req, res) => {
         const result = await usersCollection.find().toArray();
@@ -95,6 +95,7 @@ async function run() {
         console.log(result);
         res.send(result);
     })
+
 
     app.get('/users/admin/:email', verifyJWT, async(req, res) => {
       const email = req.params.email
@@ -154,10 +155,19 @@ async function run() {
       res.send(result);
     })
 
-    // MY CLASSES API
+    // ALL CLASSES
 
     app.get('/classes', async (req, res) => {
+      
       const result = await classCollection.find().toArray();
+      res.send(result);
+    })
+
+    // MY CLASSES API
+
+    app.get('/classes/:email', async (req, res) => {
+      const email = req.params.email
+      const result = await classCollection.find({instructorEmail: email}).toArray();
       res.send(result);
     })
 
@@ -166,6 +176,7 @@ async function run() {
     app.put('/classes/:id', async (req, res) => {
       const id = req.params.id;
       const body = req.body
+      console.log(body);
       const filter = { _id: new ObjectId(id) }
       const singleClasses = {
         $set: {
@@ -177,6 +188,8 @@ async function run() {
       res.send(result)
     })
 
+
+  
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
