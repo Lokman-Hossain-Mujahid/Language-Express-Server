@@ -146,6 +146,39 @@ async function run() {
       res.send(result);
     })
 
+
+
+    // TO APPROVE/DENY
+
+    app.put('/classes/:id', async(req,res) => {
+      const id = req.params.id;
+      const body = req.body
+      const filter = { _id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          status: body.status,
+        },
+      };
+      const result = await classCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
+
+    // FEEDBACK
+    app.put('/feedback/:id', async(req,res) => {
+      const id = req.params.id;
+      const body = req.body
+      const filter = { _id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          feedBack: body.feedBack
+        },
+      };
+      const result = await classCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
+
+
+
     // IMPORTANT REMINDER TO MYSELF: IF CODE NOT WORKING REMOVE THIS JWT AND VERIFY!
 
     // ADD A CLASS API
