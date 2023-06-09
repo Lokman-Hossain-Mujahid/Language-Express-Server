@@ -297,6 +297,7 @@ async function run() {
     })
 
 
+
     // Update selected classes for a user
     app.put('/updateSelectedClasses/:email', async (req, res) => {
       const email = req.params.email;
@@ -308,8 +309,6 @@ async function run() {
       const result = await usersCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
-
-
 
 
     // Send a ping to confirm a successful connection
