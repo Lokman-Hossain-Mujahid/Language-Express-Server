@@ -243,7 +243,7 @@ async function run() {
 
     app.put('/deleteClass/:email', async (req, res) => {
 
-      const body = req.body   
+      const body = req.body
       const email = req.params.email;
       // console.log(email);
       const query = { email: email }
@@ -261,9 +261,9 @@ async function run() {
     })
 
     // PAYMENT INTENT API
-    app.post('/create-payment-intent', async(req, res) => {
-      const {price} = req.body;
-      const amount = price*100;
+    app.post('/create-payment-intent', async (req, res) => {
+      const { price } = req.body;
+      const amount = price * 100;
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
         currency: 'usd',
@@ -276,7 +276,7 @@ async function run() {
 
 
     // PAYMENT RELATED API
-    app.post('/payments', async(req,res) => {
+    app.post('/payments', async (req, res) => {
       const payment = req.body;
       const result = await paymentCollection.insertOne(payment);
       res.send(result);
@@ -295,6 +295,21 @@ async function run() {
       res.send(result)
 
     })
+
+
+    // Update selected classes for a user
+    app.put('/updateSelectedClasses/:email', async (req, res) => {
+      const email = req.params.email;
+      const selectedClasses = req.body.selectedClasses;
+
+      const filter = { email: email };
+      const updateDoc = { $addToSet: { selectedClasses: { $each: selectedClasses } } };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+
 
 
     // Send a ping to confirm a successful connection
