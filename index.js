@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors')
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -46,6 +47,7 @@ async function run() {
     const usersCollection = database.collection('user')
     const classCollection = database.collection('classes')
     const SelectedClassCollection = database.collection('SelectedClasses')
+    const paymentCollection = database.collection('payments')
 
     app.post('/jwt', (req, res) => {
       const user = req.body
@@ -256,7 +258,41 @@ async function run() {
 
       res.send(result)
 
+    })
 
+    // PAYMENT INTENT API
+    app.post('/create-payment-intent', async(req, res) => {
+      const {price} = req.body;
+      const amount = price*100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret
+      })
+    })
+
+
+    // PAYMENT RELATED API
+    app.post('/payments', async(req,res) => {
+      const payment = req.body;
+      const result = await paymentCollection.insertOne(payment);
+      res.send(result);
+    })
+
+    // ALTERNATE PAYMENT RELATED API
+    app.put('/managePayment/:email', async (req, res) => {
+
+      const email = req.params.email;
+      // console.log(email);
+      const body = req.body.paymentHistory
+      // console.log(body);
+      const filter = { email: email }
+      const result = await usersCollection.updateOne(filter, { $push: { paymentHistory: { $each: body } } });;
+
+      res.send(result)
 
     })
 
