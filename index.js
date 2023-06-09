@@ -112,7 +112,7 @@ async function run() {
     })
 
     // DASHBOARD ROLES
-    app.get('/currentuser/:email', async (req, res) => {
+    app.get('/currentUser/:email', async (req, res) => {
       const email = req.params.email
       // console.log(email);
       const result = await usersCollection.find({ email: email }).toArray()
@@ -223,30 +223,42 @@ async function run() {
     })
 
 
-    // SELECT CLASS API
 
-    app.put('/selectedClasses', async (req, res) => {
-      const body = req.body;
-      const query = { id: body._id }
-      const existingUser = await SelectedClassCollection.findOne(query);
+    // SELECTED  CLASSES
+    app.put('/manageUserAddClass/:email', async (req, res) => {
 
-      if (existingUser) {
-        return res.send({ message: 'user already exists' })
+      const email = req.params.email;
+      const body = req.body.addedClass
+      const filter = { email: email }
+      const result = await usersCollection.updateOne(filter, { $push: { addedClasses: { $each: body } } });;
+
+      res.send(result)
+
+    })
+
+
+    //  DELETE CLASSES
+
+    app.put('/deleteClass/:email', async (req, res) => {
+
+      const body = req.body   
+      const email = req.params.email;
+      // console.log(email);
+      const query = { email: email }
+      const updatedDoc = {
+        $set: {
+          addedClasses: body.addedClasses,
+
+        }
       }
 
-      const selectedClass = {
-        image: body.image,
-        className: body.className,
-        instructorName: body.instructorName,
-        availableSeats: body.availableSeats,
-        price: body.price
-      };
+      const result = await usersCollection.updateOne(query, updatedDoc);
 
-      const result = await SelectedClassCollection.insertOne(selectedClass);
-      res.send(result);
-    });
+      res.send(result)
 
 
+
+    })
 
 
     // Send a ping to confirm a successful connection
