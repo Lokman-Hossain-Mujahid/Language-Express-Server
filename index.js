@@ -310,6 +310,24 @@ async function run() {
       res.send(result);
     });
 
+    // REDUCE SEATS
+    app.put('/update/:id', async (req, res) => {
+      const id = req.params.id;
+      const body = req.body;
+
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          price: body.price,
+          availableSeats: body.availableSeats
+        }
+      };
+
+      const result = await classCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
