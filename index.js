@@ -112,6 +112,22 @@ async function run() {
         res.send(result);
       }
     });
+
+
+    // FOR STUDENT ROUTE
+    app.get("/users/student/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+    
+      if (req.decoded.email !== email) {
+        res.send({ student: false });
+      } else {
+        const query = { email: email };
+        const user = await usersCollection.findOne(query);
+        const result = { student: user?.role === "student" };
+        res.send(result);
+      }
+    });
+    
     
 
     // DASHBOARD ROLES
