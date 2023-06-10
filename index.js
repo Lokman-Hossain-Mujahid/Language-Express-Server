@@ -99,19 +99,20 @@ async function run() {
       res.send(result);
     })
 
-
+    // FOR ADMIN ROUTE CHANGING
     app.get('/users/admin/:email', verifyJWT, async (req, res) => {
       const email = req.params.email
-
+    
       if (req.decoded.email !== email) {
         res.send({ admin: false })
+      } else {
+        const query = { email: email }
+        const user = await usersCollection.findOne(query);
+        const result = { admin: user?.role === 'admin' }
+        res.send(result);
       }
-
-      const query = { email: email }
-      const user = await usersCollection.findOne(query);
-      const result = { admin: user?.role === 'admin' }
-      res.send(result);
-    })
+    });
+    
 
     // DASHBOARD ROLES
     app.get('/currentUser/:email', async (req, res) => {
