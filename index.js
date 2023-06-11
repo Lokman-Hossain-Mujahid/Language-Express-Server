@@ -46,8 +46,6 @@ async function run() {
     const database = client.db("LanguageDb")
     const usersCollection = database.collection('user')
     const classCollection = database.collection('classes')
-    const SelectedClassCollection = database.collection('SelectedClasses')
-    const paymentCollection = database.collection('payments')
 
     app.post('/jwt', (req, res) => {
       const user = req.body
@@ -317,12 +315,7 @@ async function run() {
     })
 
 
-    // PAYMENT RELATED API
-    app.post('/payments', async (req, res) => {
-      const payment = req.body;
-      const result = await paymentCollection.insertOne(payment);
-      res.send(result);
-    })
+    
 
     // ALTERNATE PAYMENT RELATED API
     app.put('/managePayment/:email', async (req, res) => {
