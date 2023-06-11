@@ -233,6 +233,14 @@ async function run() {
       res.send(result);
     })
 
+    // POPULAR CLASSES
+
+    app.get('/popularClasses', async (req, res) => {
+      const result = await classCollection.find().sort({ enrolledStudents: -1 }).toArray();
+      res.send(result);
+    });
+    
+
     // MY CLASSES API
 
     app.get('/classes/:email', async (req, res) => {
@@ -344,22 +352,24 @@ async function run() {
       res.send(result);
     });
 
-    // REDUCE SEATS
-    app.put('/update/:id', async (req, res) => {
+    // REDUCE SEATS Chaning
+    app.put('/updateSeat/:id', async (req, res) => {
       const id = req.params.id;
       const body = req.body;
-
+      
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
           price: body.price,
-          availableSeats: body.availableSeats
+          availableSeats: body.availableSeats,
+          enrolledStudents: body.enrolledStudents
         }
       };
-
+    
       const result = await classCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+    
 
 
 
